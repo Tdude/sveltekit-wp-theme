@@ -1,0 +1,74 @@
+:root {
+/* Easy tool: https://borderleft.com/toolbox/rgba/ */
+  --bg-gray: rgb(42, 51, 66);
+  --text-slate-800: rgb(42, 51, 66);
+  --white: rgb(255, 255, 255);
+  --gray: rgb(180, 180, 180);
+  --black: rgb(0, 0, 0);
+  --black-semi: rgba(0, 0, 0, .5);
+  --transp-light: rgba(255, 255, 255, 0.5);
+
+  --color-bg-slate-800: theme('colors.slate.800');
+  --color-bg-slate-900: theme('colors.slate.900');
+}
+
+
+body,
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  padding: 0;
+  color: var(--text-slate-800);
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.centered {
+  text-align: center;
+}
+
+
+.font-body {
+  font-family: "Poppins", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+
+.item {
+  max-width: 47%;
+  grid-column-gap: 20px;
+  text-align: left;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-family: Comfortaa, sans-serif;
+  font-size: 22px;
+  line-height: 30px;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+
+}
+
+
+
+
+.hover-gradient:hover {
+  background-image: linear-gradient(
+    to top right,
+    #f6ba50,
+    #ed8936
+  );
+}
