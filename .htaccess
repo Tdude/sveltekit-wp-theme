@@ -1,0 +1,37 @@
+
+# BEGIN WordPress
+# The directives (lines) between "BEGIN WordPress" and "END WordPress" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+#	<IfModule mod_rewrite.c>
+#	RewriteEngine On
+#	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+#	RewriteBase /
+#	RewriteRule ^index\.php$ - [L]
+#	RewriteCond %{REQUEST_FILENAME} !-f
+#	RewriteCond %{REQUEST_FILENAME} !-d
+#	RewriteRule . /index.php [L]
+#	</IfModule>
+
+# END (standard) WordPress
+# BEGIN API and Admin only WordPress config
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Exclude WP admin and WP API from the redirect
+RewriteCond %{REQUEST_URI} !^/wp-admin [NC]
+RewriteCond %{REQUEST_URI} !^/wp-login\.php [NC]
+RewriteCond %{REQUEST_URI} !^/wp-json [NC]
+
+# Redirect front-end traffic to the Svelte app
+RewriteRule ^$ /sveltekit-wp-theme/index.html [L]
+RewriteRule !^sveltekit-wp-theme/ /sveltekit-wp-theme/index.html [L,NC]
+
+# WordPress rules
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress
