@@ -11,7 +11,7 @@ const cache = {
 };
 
 // Fetch posts but paginate. The "fetch" param is for Isomorphic server/client side API retrieval
-export async function fetchPosts(page = 1, perPage = 10, postType = 'site_sections') {
+export async function fetchPosts(page = 1, perPage = 20, postType = 'site_sections') {
     const cacheKey = `${postType}-${page}-${perPage}`;
     if (cache.posts[cacheKey]) {
         console.log(`Returning cached data for ${cacheKey}`);
@@ -65,7 +65,7 @@ export async function fetchMenu(menuId = 'menu-1') {
         return cache.menus[menuId];
     }
 
-    console.log(`Fetching menu for ${menuId}`);
+    //console.log(`Fetching menu for ${menuId}`);
     try {
         const response = await fetch(`${BASE_URL}ss/v1/menus/${menuId}`);
         if (!response.ok) {
