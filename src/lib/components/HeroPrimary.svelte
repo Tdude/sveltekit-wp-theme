@@ -1,4 +1,4 @@
-<!-- src/components/HeroPrimary.svelte -->
+<!-- HeroPrimary.svelte -->
 <script>
     // Declare vars and fallbacks
     export let title = 'Hero Primary Title';
@@ -12,7 +12,7 @@
     export let altText = 'En fin bild';
     export let layout = '';
     import WaveSvg from './WaveSvg.svelte';
-    $: bgColorClass = layout === 'hero_section' ? 'bg-slate-900' : 'bg-slate-800';
+    $: bgColorClass = layout === 'hero_section' ? 'bg-slate-800' : 'bg-slate-900';
 
     
 </script>
