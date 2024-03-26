@@ -15,7 +15,10 @@ const config = {
       precompress: false, // Enable precompression (optional)
     }),
 
-    // Add other kit options here, such as paths, vite plugins, etc.
+    // paths: {
+    //   // Specify the base path
+    //   base: '/sveltekit-wp-theme',
+    // },
   },
 };
 

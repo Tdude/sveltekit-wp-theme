@@ -5,6 +5,7 @@
   import HeroSection from '../lib/components/HeroSection.svelte';
   import WaveSvg from '../lib/components/WaveSvg.svelte';
 
+
   let posts = [];
 
   onMount(async () => {

@@ -9,6 +9,7 @@
                   : position === 'center'
                   ? 'text-center'
                   : 'text-left';
+                  console.log('FLEX POSITION: ' + flexPosition);
 </script>
 
 

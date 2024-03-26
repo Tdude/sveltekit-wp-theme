@@ -1,37 +1,137 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Skip redirection for existing files or directories, WordPress admin, login, and API
+RewriteCond %{REQUEST_URI} "/wp-admin" [OR]
+RewriteCond %{REQUEST_URI} "/wp-login.php" [OR]
+RewriteCond %{REQUEST_URI} "/wp-json" [OR]
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Redirect all other traffic to Svelte app
+RewriteRule ^ sveltekit-wp-theme%{REQUEST_URI} [L,QSA]
+
+</IfModule>
+
+
+
+
+
+
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Serve JavaScript files with the correct MIME type.
+AddType application/javascript .js
+# SVG mime type
+AddType image/svg+xml .svg
+RewriteCond %{REQUEST_URI} !^/(images|icons)
+
+
+
+# Redirect the homepage to the Svelte app. This rule only applies to the root "/" request.
+RewriteRule ^$ /sveltekit-wp-theme/ [L]
+RewriteRule ^(wp-admin|wp-includes|wp-content/uploads|sveltekit-wp-theme/sveltekit-wp-theme/icons) - [L]
+
+# Redirect requests to the Svelte app directory directly to the app without rewriting.
+RewriteRule ^(sveltekit-wp-theme/.*)$ /$1 [L]
+
+# For all other requests, first check if the request corresponds to an actual file or directory.
+# If not, and it doesn't match specific WordPress backend URIs, rewrite the request to WordPress's index.php for handling.
+# This allows pretty permalinks in WordPress and custom routing for the Svelte app.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/(wp-admin|wp-login\.php|wp-json/wp/v2)
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress
+
+
+
+
+
+
+
+#### This could work:
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Serve JavaScript files with the correct MIME type
+AddType application/javascript .js
+
+# Prevent direct access to PHP files in the uploads directory
+RewriteCond %{REQUEST_URI} ^/wp-content/uploads/.*\.php$
+RewriteRule .* - [F,L]
+
+# Allow direct access to specific WordPress directories and your icons
+RewriteCond %{REQUEST_URI} !^(wp-admin|wp-includes|wp-content/uploads|sveltekit-wp-theme/icons).*
+RewriteRule ^(sveltekit-wp-theme/.*)$ /$1 [L]
+
+# Redirect the homepage to the Svelte app
+RewriteRule ^$ /sveltekit-wp-theme/ [L]
+
+# Before rewriting to index.php, ensure the request does not correspond to a real file or directory
+# This includes requests to your Svelte app, which should not be caught in a WordPress rewrite loop
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/sveltekit-wp-theme/
+RewriteCond %{REQUEST_URI} !^/(wp-admin|wp-login\.php|wp-json/wp/v2).*
+RewriteRule . /index.php [L]
+</IfModule>
+
+
+
+
+# This should work (monday)
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Serve JavaScript files with the correct MIME type
+AddType application/javascript .js
+
+# Redirect the homepage to the Svelte app, ensure it doesn't interfere with WordPress logic
+RewriteRule ^$ /sveltekit-wp-theme/ [L]
+
+# Ensure direct access to WordPress admin, login, and REST API
+RewriteRule ^(wp-admin|wp-login\.php|wp-json)(.*) - [L]
+
+# Serve static files (images, CSS, JavaScript) directly
+RewriteRule ^sveltekit-wp-theme/(.*\.(jpg|jpeg|png|gif|css|js))$ /sveltekit-wp-theme/$1 [L]
+
+# For all other requests within the sveltekit-wp-theme, serve the SvelteKit app
+RewriteCond %{REQUEST_URI} ^/sveltekit-wp-theme/
+RewriteRule ^sveltekit-wp-theme/(.*)$ /sveltekit-wp-theme/index.html [L]
+
+# For WordPress: Only rewrite if the requested resource doesn't exist
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+
+
+
+
 
 # BEGIN WordPress
 # The directives (lines) between "BEGIN WordPress" and "END WordPress" are
 # dynamically generated, and should only be modified via WordPress filters.
 # Any changes to the directives between these markers will be overwritten.
-#	<IfModule mod_rewrite.c>
-#	RewriteEngine On
-#	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-#	RewriteBase /
-#	RewriteRule ^index\.php$ - [L]
-#	RewriteCond %{REQUEST_FILENAME} !-f
-#	RewriteCond %{REQUEST_FILENAME} !-d
-#	RewriteRule . /index.php [L]
-#	</IfModule>
-
-# END (standard) WordPress
-# BEGIN API and Admin only WordPress config
 <IfModule mod_rewrite.c>
 RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteBase /
-
-# Exclude WP admin and WP API from the redirect
-RewriteCond %{REQUEST_URI} !^/wp-admin [NC]
-RewriteCond %{REQUEST_URI} !^/wp-login\.php [NC]
-RewriteCond %{REQUEST_URI} !^/wp-json [NC]
-
-# Redirect front-end traffic to the Svelte app
-RewriteRule ^$ /sveltekit-wp-theme/index.html [L]
-RewriteRule !^sveltekit-wp-theme/ /sveltekit-wp-theme/index.html [L,NC]
-
-# WordPress rules
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
+
 # END WordPress
