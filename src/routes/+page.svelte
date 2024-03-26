@@ -1,133 +1,164 @@
 <script>
-	import { onMount } from 'svelte';
-	import {
-		SiteHeader,
-		HeroPrimary,
-		HeroSecondary,
-		FeatureSection,
-		FeatureLarge,
-		FeatureMedium,
-		FeatureSmall
-	} from '../lib/components';
-	import { fetchPosts, fetchMediaDetails } from '../services';
-	
-	let posts = [];
-	let smallFeatures = [];
-	let mediumFeatures = [];
-	let largeFeatures = [];
+    import { onMount } from 'svelte';
+    import { SiteHeader, HeroPrimary, HeroSecondary, FeatureSection, FeatureLarge, FeatureMedium, FeatureSmall, PostCard, SiteFooter } from '../lib/components';
+    import { fetchPosts, fetchMediaDetails } from '../services';
 
-	onMount(async () => {
-		try {
-			const fetchedPosts = await fetchPosts(1, 10, 'site_sections');
+    let allPosts = []; // Will initially hold all fetched and processed posts
+    let postGroups = []; // Individual posts or groups of posts for rendering
 
-			console.log('Loaded site_sections in +page.svelte:', fetchedPosts);
+    onMount(async () => {
+        try {
+            const fetchedPosts = await fetchPosts(1, 20, 'site_sections', true);
+            console.log('Loaded from WP in +page.svelte:', fetchedPosts);
 
-			posts = await Promise.all(fetchedPosts.map(async (post) => {
-				const title = post.title?.rendered || 'No Title';
-				const excerpt = post.excerpt?.rendered || 'No Excerpt';
-				const meta_header = post.meta_header || 'No meta header';
-				let imageUrl = '', altText = '';
+			let processedPosts = await Promise.all(fetchedPosts.map(async (post) => {
+			    let imageUrl = '', altText = '';
+			    if (post._links['wp:featuredmedia']) {
+			        const mediaURL = post._links['wp:featuredmedia'][0].href;
+			        const mediaDetails = await fetchMediaDetails(mediaURL);
+			        imageUrl = mediaDetails.imageUrl;
+			        altText = mediaDetails.altText;
+			    }
 
-				if (post._links['wp:featuredmedia']) {
-					const mediaURL = post._links['wp:featuredmedia'][0].href;
-					const mediaDetails = await fetchMediaDetails(mediaURL);
-					imageUrl = mediaDetails.imageUrl;
-					altText = mediaDetails.altText;
-				}
+			    // Ensure categorySlugs is always an array
+			    const categorySlugs = post.ss_cat_slugs || [];
 
-				// Base object for all posts
-				let basePost = { 
-					title, 
-					excerpt,
-					meta_header,
-					layout: post.layout,
-					position: post.position
-				};
+			    const isGrouped = categorySlugs.some(slug => slug.startsWith('group-'));
 
-				// Add additional properties for hero sections
-				if (post.layout === 'hero_primary' || post.layout === 'hero_secondary') {
-					Object.assign(basePost, {
-						imageUrl,
-            altText,
-						cta_text: post.cta_text || '',
-						cta_link: post.cta_link || '',
-						cta_text_sec: post.cta_text_sec || '',
-						cta_link_sec: post.cta_link_sec || '',
-						layout: post.layout
-					});
-				}
-				return basePost;
+
+			    return { 
+			        ...post, 
+			        imageUrl,
+			        altText,
+			        title: post.title.rendered,
+			        excerpt: post.excerpt.rendered,
+			        content: post.content.rendered,
+			        icon: post.icon,
+			        position: post.position,
+			        layout: post.layout,
+			        categorySlugs, // No longer directly accessing post.ss_cat_slugs here
+			        isGrouped,
+			        postOrder: post.post_order
+			    };
 			}));
 
-			// Separate layouts
-			smallFeatures = posts
-			  .filter(post => post.layout === 'features_small')
-			  .map(({ meta_header, layout, position, ...rest }) => rest);
 
-			mediumFeatures = posts
-			  .filter(post => post.layout === 'features_medium')
-			  .map(({ layout, ...rest }) => rest);
+            allPosts = processedPosts.sort((a, b) => a.postOrder - b.postOrder);
 
-			largeFeatures = posts
-			  .filter(post => post.layout === 'features_large')
-			  .map(({ layout, ...rest }) => rest);
+            postGroups = [];
 
-			// Now, remove smallFeatures etc. from posts
-			posts = posts.filter(post => 
-			  post.layout !== 'features_small' && post.layout !== 'features_medium' && post.layout !== 'features_large'
-			).map(({ position, ...rest }) => rest);
-			// Filtered arrays
-			// console.log(smallFeatures, mediumFeatures, posts);
-		} catch (error) {
-			console.error('Failed to load posts:', error);
-		}
-	});
+			let currentGroup = [];
+			processedPosts.forEach((post, index) => {
+			    if (post.isGrouped) {
+			        // Add post to the current group
+			        currentGroup.push(post);
+
+			        // If it's the last post in the array or the next post is not part of the same group
+			        if (index === processedPosts.length - 1 || processedPosts[index + 1].postOrder !== post.postOrder) {
+			            // Push the current group to postGroups and reset currentGroup
+			            postGroups.push(currentGroup);
+			            currentGroup = [];
+			        }
+			    } else {
+			        // For non-grouped posts, push them as individual arrays for consistency
+			        postGroups.push([post]);
+			    }
+			});
+
+    		console.log('Post Groups:', postGroups);
+
+        } catch (error) {
+            console.error('Failed to load posts:', error);
+        }
+    });
 
 
-	// Function to determine the component based on the layout
+
+
+
 	function resolveComponent(layout) {
-		switch (layout) {
-			case 'hero_primary': return HeroPrimary;
-			case 'hero_secondary': return HeroSecondary;
-			case 'features_small': return FeatureSmall;
-			case 'features_medium': return FeatureMedium;
-			case 'features_large': return FeatureLarge;
-			default: return null;
-		}
+	    switch (layout) {
+	        case 'hero_primary': return HeroPrimary;
+	        case 'hero_secondary': return HeroSecondary;
+	        case 'features_small': return FeatureSmall;
+	        case 'features_medium': return FeatureMedium;
+	        case 'features_large': return FeatureLarge;
+	        case 'postcard': return PostCard;
+	        default: return null; // or a default component
+	    }
 	}
+
+	// Allowlist
+	function resolveProps(layout, post) {
+	    switch (layout) {
+			case 'hero_primary':
+			case 'hero_secondary':
+				return {	imageUrl: post.imageUrl,
+							altText: post.altText,
+							title: post.title,
+							excerpt: post.excerpt,
+							meta_header: post.meta_header,
+							cta_text: post.cta_text,
+							cta_link: post.cta_link,
+							cta_text_sec: post.cta_text_sec,
+							cta_link_sec: post.cta_link_sec,
+							layout: post.layout
+						};
+			
+			case 'postcard':
+			    return {	title: post.title,
+							excerpt: post.excerpt,
+							content: post.content,
+							meta_header: post.meta_header,
+							cta_text: post.cta_text,
+							cta_link: post.cta_link,
+							style: post.style,
+							icon: post.icon
+						};
+			case 'features_small':
+				return {	title: post.title,
+							excerpt: post.excerpt,
+							icon: post.icon
+						};
+			case 'features_medium':
+			case 'features_large':
+
+			    return {	title: post.title,
+			    			excerpt: post.excerpt,
+			    			meta_header: post.meta_header
+			    		};
+			default:
+			    return {}; // Return an empty object or sensible defaults
+	    }
+	}
+
 
 </script>
 
+<div class="relative overflow-hidden">
+    <SiteHeader />
+    {#if postGroups.length === 0}
+        <p>Loading...</p>
+    {:else}
+        {#each postGroups as group}
+            {#if group.length > 1}
+                <FeatureSection>
+                    {#each group as post}
+                        <svelte:component this={resolveComponent(post.layout)} {...resolveProps(post.layout, post)} />
+                    {/each}
+                </FeatureSection>
+            {:else}
+                {#each group as post}
+                    <svelte:component this={resolveComponent(post.layout)} {...resolveProps(post.layout, post)} />
+                {/each}
+            {/if}
+        {/each}
+    {/if}
+    <SiteFooter />
+</div>
 
 
-<section class="relative overflow-hidden">
-	<SiteHeader />
 
-	{#if posts.length === 0 && smallFeatures.length === 0}
-		<p>Loading...</p>
-	{:else}
-		{#each posts as post}
-			{#if ['hero_primary', 'hero_secondary'].includes(post.layout)}
-				<svelte:component this={resolveComponent(post.layout)} {...post} />
-			{/if}
-		{/each}
-		{#if largeFeatures.length}
-			{#each largeFeatures as feature}
-				<svelte:component this={FeatureLarge} {...feature} />
-			{/each}
-		{/if}
-		{#if mediumFeatures.length}
-			{#each mediumFeatures as feature}
-				<svelte:component this={FeatureMedium} {...feature} />
-			{/each}
-		{/if}
-		{#if smallFeatures.length}
-			<FeatureSection>
-				{#each smallFeatures as feature}
-					<svelte:component this={FeatureSmall} {...feature} />
-				{/each}
-			</FeatureSection>
-		{/if}
-	{/if}
-</section>
+
+
 
