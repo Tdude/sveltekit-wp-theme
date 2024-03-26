@@ -1,9 +1,9 @@
 <!-- src/components/NavLink.svelte -->
 <script>
-    export let href = 'mindialog.se';
-    export let text = 'LINK';
+  export let href = '';
+  export let text = '';
 </script>
 
 <li class="mr-12">
-  <a class="text-slate-100 hover:text-slate-50 font-medium" data-config-id="auto-txt-1-1" {href}>{text}</a>
+  <a class="text-slate-100 hover:text-slate-50 font-medium" href={href}>{text}</a>
 </li>
