@@ -7,3 +7,4 @@ export { default as FeatureLarge } from './FeatureLarge.svelte';
 export { default as FeatureMedium } from './FeatureMedium.svelte';
 export { default as FeatureSmall } from './FeatureSmall.svelte';
 export { default as PostCard } from './PostCard.svelte';
+export { default as SiteFooter } from './SiteFooter.svelte';
