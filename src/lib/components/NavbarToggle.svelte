@@ -1,3 +1,4 @@
+<!-- NavMobileToggle.svelte -->
 <script>
   export let toggle = () => {};
   let icon = 'menu-outline';

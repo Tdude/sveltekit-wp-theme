@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { fetchPosts } from '../services/WordPressService';
+  import { fetchContent } from '../services/WordPressService';
   import Header from '../lib/components/SiteHeader.svelte';
   import HeroSection from '../lib/components/HeroSection.svelte';
   import WaveSvg from '../lib/components/WaveSvg.svelte';
@@ -9,7 +9,7 @@
   let posts = [];
 
   onMount(async () => {
-    posts = await fetchPosts();
+    posts = await fetchContent();
   });
 </script>
 
@@ -20,7 +20,7 @@
 <section class="relative overflow-hidden">
     <Header />
     <HeroSection />
-    <WaveSvg /> Kuken ballen
+    <WaveSvg /> Kuken ballen index.htmlen
 </section>
 
 

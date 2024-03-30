@@ -1,6 +1,7 @@
 import adapter from '@sveltejs/adapter-static'; // Import the adapter
 import preprocess from 'svelte-preprocess'; // Import preprocess for Svelte
 
+
 const config = {
   // Enable preprocess support, useful for SCSS, TypeScript, etc.
   preprocess: preprocess(),
@@ -14,11 +15,9 @@ const config = {
       fallback: 'index.html', // Useful for single-page applications
       precompress: false, // Enable precompression (optional)
     }),
-
-    // paths: {
-    //   // Specify the base path
-    //   base: '/sveltekit-wp-theme',
-    // },
+    paths: {
+      base: process.env.BASE_URL || '',
+    },
   },
 };
 

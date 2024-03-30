@@ -1,14 +1,16 @@
 <script>
     import { onMount } from 'svelte';
-    import { SiteHeader, HeroPrimary, HeroSecondary, FeatureSection, FeatureLarge, FeatureMedium, FeatureSmall, PostCard, SiteFooter } from '../lib/components';
-    import { fetchPosts, fetchMediaDetails } from '../services';
+    import { SiteHeader, HeroPrimary, HeroSecondary, FeatureSection, FeatureLarge, FeatureMedium, FeatureSmall, PostCard, SiteFooter, Posts } from '../lib/components';
+    import { fetchContent, fetchMediaDetails } from '../services';
 
     let allPosts = []; // Will initially hold all fetched and processed posts
     let postGroups = []; // Individual posts or groups of posts for rendering
 
     onMount(async () => {
         try {
-            const fetchedPosts = await fetchPosts(1, 20, 'site_sections', true);
+            //const fetchedPosts = await fetchPosts(1, 20, 'site_sections', true);
+            const fetchedPosts = await fetchContent({ postTypes: ['posts', 'pages', 'site_sections'] })
+
             console.log('Loaded from WP in +page.svelte:', fetchedPosts);
 
 			let processedPosts = await Promise.all(fetchedPosts.map(async (post) => {
@@ -27,18 +29,18 @@
 
 
 			    return { 
-			        ...post, 
-			        imageUrl,
-			        altText,
-			        title: post.title.rendered,
-			        excerpt: post.excerpt.rendered,
-			        content: post.content.rendered,
-			        icon: post.icon,
-			        position: post.position,
-			        layout: post.layout,
-			        categorySlugs, // No longer directly accessing post.ss_cat_slugs here
-			        isGrouped,
-			        postOrder: post.post_order
+					...post, 
+					imageUrl,
+					altText,
+					title: post.title.rendered,
+					excerpt: post.excerpt.rendered,
+					content: post.content.rendered,
+					icon: post.icon,
+					position: post.position,
+					layout: post.layout,
+					categorySlugs, // No longer directly accessing post.ss_cat_slugs here
+					isGrouped,
+					postOrder: post.post_order
 			    };
 			}));
 
@@ -65,7 +67,8 @@
 			    }
 			});
 
-    		console.log('Post Groups:', postGroups);
+			// Nested arrays here
+    		//console.log('Post Groups:', postGroups);
 
         } catch (error) {
             console.error('Failed to load posts:', error);
@@ -74,9 +77,10 @@
 
 
 
-
-
-	function resolveComponent(layout) {
+	function resolveComponent(layout, postType) {
+	    if (postType === 'posts') {
+	        return Posts;
+	    }
 	    switch (layout) {
 	        case 'hero_primary': return HeroPrimary;
 	        case 'hero_secondary': return HeroSecondary;
@@ -84,7 +88,7 @@
 	        case 'features_medium': return FeatureMedium;
 	        case 'features_large': return FeatureLarge;
 	        case 'postcard': return PostCard;
-	        default: return null; // or a default component
+	        default: return Posts; // Make sure DefaultComponent is imported or defined
 	    }
 	}
 
@@ -122,13 +126,12 @@
 						};
 			case 'features_medium':
 			case 'features_large':
-
 			    return {	title: post.title,
 			    			excerpt: post.excerpt,
 			    			meta_header: post.meta_header
 			    		};
 			default:
-			    return {}; // Return an empty object or sensible defaults
+			    return {	post }; // Return whole obj for Posts component
 	    }
 	}
 
@@ -144,7 +147,7 @@
             {#if group.length > 1}
                 <FeatureSection>
                     {#each group as post}
-                        <svelte:component this={resolveComponent(post.layout)} {...resolveProps(post.layout, post)} />
+                        <svelte:component this={resolveComponent(post.layout, post.type)} {...resolveProps(post.layout, post)} />
                     {/each}
                 </FeatureSection>
             {:else}

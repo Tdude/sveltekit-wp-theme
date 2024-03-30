@@ -1,6 +1,6 @@
 // Exporting functions from the service
 export {
-	fetchPosts,
+	fetchContent,
 	fetchMediaDetails,
 	fetchMenu
 } from './WordPressService';

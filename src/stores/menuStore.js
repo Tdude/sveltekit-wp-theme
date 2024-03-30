@@ -1,18 +1,14 @@
 // src/stores/menuStore.js
 import { writable, get } from 'svelte/store';
 import { fetchMenu } from '../services/WordPressService';
+export const menuItems = writable([]);
 
-const menuItems = writable([]);
+
 
 export const loadMenuItems = async () => {
-  if (get(menuItems).length === 0) { // Prevent refetching if already loaded
-    try {
-      const menuData = await fetchMenu('menu-1');
-      menuItems.set(menuData.map(item => ({ title: item.title, url: item.url })));
-    } catch (error) {
-      console.error("Failed to load menu:", error);
-    }
-  }
+    const menuData = await fetchMenu('menu-1'); // Fetch the menu data
+    menuItems.set(menuData); // Assume menuData is an array of menu items
 };
 
 export default menuItems;
+

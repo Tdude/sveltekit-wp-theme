@@ -9,9 +9,7 @@
                   : position === 'center'
                   ? 'text-center'
                   : 'text-left';
-                  console.log('FLEX POSITION: ' + flexPosition);
 </script>
-
 
 <div class="container px-4 mx-auto">
   <div class={`md:max-w-4xl mb-12 mx-auto ${flexPosition}`}>

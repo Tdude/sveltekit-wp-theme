@@ -28,7 +28,7 @@
   <div class="flex justify-between items-center w-full">
     <div class="w-1/2 xl:w-1/3">
         <a class="block max-w-max md:pl-8 md:-mt-8" href="/home">
-            <img class="h-32" src="images/tryggve-logo-inv-green.svg" alt="" data-config-id="auto-img-1-1">
+            <img class="h-32" src="/images/tryggve-logo-inv-green.svg" alt="" data-config-id="auto-img-1-1">
         </a>
     </div>
     <div class="w-1/2 xl:w-1/3">

@@ -3,7 +3,7 @@
   export let icon = '';
   export let style = '';
 
-  $: iconPath = `/icons/${icon}.svg`;
+  $: iconPath = `/images/icons/${icon}.svg`;
 
   $: bgStyle = style === 'gray' || style === 'light' ? 'text-slate-900' : 'text-slate-800';
 
