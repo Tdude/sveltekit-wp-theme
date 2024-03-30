@@ -72,3 +72,47 @@ h3 {
     #ed8936
   );
 }
+
+
+
+
+/* Spinner is also overlay */
+.spinner {
+  background-color: var(--transp-light);
+  display: none;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+/* The before/after make for a Greenland flag rolling effect. */
+.spinner:before {
+  content: "";
+  position: absolute;
+  border: 60px solid transparent;
+  border-top-color: var(--white);
+  border-right-color: var(--white);
+  border-radius: 50%;
+  transform: rotate(-65deg);
+  animation: rotate 5s infinite reverse cubic-bezier(0.59, 0.23, 0.4, 0.79);
+  width: 120px;
+  height: 120px;
+}
+
+.spinner:after {
+  content: "";
+  position: absolute;
+  border: 60px solid transparent;
+  border-bottom-color: var(--primary);
+  border-left-color: var(--primary);
+  border-radius: 50%;
+  transform: rotate(-150deg);
+  animation: rotate 4s infinite cubic-bezier(0.59, 0.23, 0.4, 0.79);
+}
+
