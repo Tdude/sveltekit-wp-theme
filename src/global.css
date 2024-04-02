@@ -76,11 +76,10 @@ h3 {
 
 
 
-/* Spinner is also overlay */
+/* Spinner is also overlay and is handled by svelte */
 .spinner {
   background-color: var(--transp-light);
-  display: none;
-  opacity: 0;
+  display: flex;
   position: absolute;
   top: 0;
   left: 0;
@@ -91,7 +90,8 @@ h3 {
   pointer-events: none;
 }
 
-/* The before/after make for a Greenland flag rolling effect. */
+
+/* rolling effect. */
 .spinner:before {
   content: "";
   position: absolute;
@@ -100,9 +100,9 @@ h3 {
   border-right-color: var(--white);
   border-radius: 50%;
   transform: rotate(-65deg);
-  animation: rotate 5s infinite reverse cubic-bezier(0.59, 0.23, 0.4, 0.79);
-  width: 120px;
-  height: 120px;
+  animation: rotate 3s infinite reverse cubic-bezier(0.59, 0.23, 0.4, 0.79);
+  width: 220px;
+  height: 220px;
 }
 
 .spinner:after {
@@ -113,6 +113,14 @@ h3 {
   border-left-color: var(--primary);
   border-radius: 50%;
   transform: rotate(-150deg);
-  animation: rotate 4s infinite cubic-bezier(0.59, 0.23, 0.4, 0.79);
+  animation: rotate 2s infinite cubic-bezier(0.59, 0.23, 0.4, 0.79);
 }
 
+@keyframes rotate {
+  0% {
+    transform: rotate(-45deg);
+  }
+  100% {
+    transform: rotate(315deg);
+  }
+}
