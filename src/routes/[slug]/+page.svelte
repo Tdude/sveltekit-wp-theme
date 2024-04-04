@@ -87,9 +87,7 @@
 						</div>
 					{/if}
 				</div>
-				<div class="mb-10 mx-auto max-w-max overflow-hidden rounded-lg">
-					<img src="./images/gubbeikylen.jpeg" alt="" />
-				</div>
+
 				<div class="md:max-w-3xl mx-auto">
 					<SocialLinks />
 				</div>
