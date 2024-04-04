@@ -9,3 +9,4 @@ export { default as FeatureSmall } from './FeatureSmall.svelte';
 export { default as PostCard } from './PostCard.svelte';
 export { default as SiteFooter } from './SiteFooter.svelte';
 export { default as Posts } from './Posts.svelte';
+export { default as SocialLinks } from './SocialLinks.svelte';
