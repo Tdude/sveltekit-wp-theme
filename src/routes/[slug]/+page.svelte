@@ -45,8 +45,16 @@
 {#if post}
 	<div class="relative overflow-hidden">
 		<SiteHeader />
+
 		{#if featuredImage}
-			<img src={featuredImage.imageUrl} alt={featuredImage.altText} class="post-title-image" />
+			<section class="py-16 md:py-24 w-full relative overflow-hidden" style="height: 500px;">
+				<!-- Adjust the height here -->
+				<img
+					src={featuredImage.imageUrl}
+					alt={featuredImage.altText}
+					class="block w-full h-full object-cover absolute top-0 left-0"
+				/>
+			</section>
 		{/if}
 		<section class="py-16 md:py-24 bg-white">
 			<div class="container px-4 mx-auto">
