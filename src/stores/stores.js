@@ -1,4 +1,4 @@
-// src/stores.js
+// src/stores/stores.js
 import { writable } from 'svelte/store';
 
 export const postsStore = writable([]);

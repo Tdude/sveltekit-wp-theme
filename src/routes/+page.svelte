@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
     import { SiteHeader, HeroPrimary, HeroSecondary, FeatureSection, FeatureLarge, FeatureMedium, FeatureSmall, PostCard, SiteFooter, Posts } from '../lib/components';
     import { fetchContent, fetchMediaDetails } from '../services';
 
@@ -9,7 +10,7 @@
     onMount(async () => {
         try {
             //const fetchedPosts = await fetchPosts(1, 20, 'site_sections', true);
-            const fetchedPosts = await fetchContent({ postTypes: ['posts', 'pages', 'site_sections'] })
+            const fetchedPosts = await fetchContent({ postTypes: ['site_sections'] })
 
             console.log('Loaded from WP in +page.svelte:', fetchedPosts);
 
@@ -17,7 +18,7 @@
 			    let imageUrl = '', altText = '';
 			    if (post._links['wp:featuredmedia']) {
 			        const mediaURL = post._links['wp:featuredmedia'][0].href;
-			        const mediaDetails = await fetchMediaDetails(mediaURL);
+			        const mediaDetails = await fetchMediaDetails(mediaURL, fetch);
 			        imageUrl = mediaDetails.imageUrl;
 			        altText = mediaDetails.altText;
 			    }
@@ -78,9 +79,10 @@
 
 
 	function resolveComponent(layout, postType) {
-	    if (postType === 'posts') {
-	        return Posts;
-	    }
+		// Remove Posts if not needed
+	    //if (postType === 'posts') {
+	    //    return Posts;
+	    //}
 	    switch (layout) {
 	        case 'hero_primary': return HeroPrimary;
 	        case 'hero_secondary': return HeroSecondary;
@@ -139,29 +141,23 @@
 </script>
 
 <div class="relative overflow-hidden">
-    <SiteHeader />
-    {#if postGroups.length === 0}
-        <p>Loading...</p>
-    {:else}
-        {#each postGroups as group}
-            {#if group.length > 1}
-                <FeatureSection>
-                    {#each group as post}
-                        <svelte:component this={resolveComponent(post.layout, post.type)} {...resolveProps(post.layout, post)} />
-                    {/each}
-                </FeatureSection>
-            {:else}
-                {#each group as post}
-                    <svelte:component this={resolveComponent(post.layout)} {...resolveProps(post.layout, post)} />
-                {/each}
-            {/if}
-        {/each}
-    {/if}
-    <SiteFooter />
+	<SiteHeader />
+		{#if postGroups.length === 0}
+		    <p class="spinner" in:fade={{ duration: 400 }} out:fade={{ duration: 400 }}>Loading...</p>
+		{:else}
+		{#each postGroups as group}
+			{#if group.length > 1}
+				<FeatureSection>
+				 	{#each group as post}
+				 	    <svelte:component this={resolveComponent(post.layout, post.type)} {...resolveProps(post.layout, post)} />
+				 	{/each}
+				</FeatureSection>
+			{:else}
+				{#each group as post}
+				    <svelte:component this={resolveComponent(post.layout)} {...resolveProps(post.layout, post)} />
+				{/each}
+			{/if}
+		{/each}
+	{/if}
+	<SiteFooter />
 </div>
-
-
-
-
-
-
